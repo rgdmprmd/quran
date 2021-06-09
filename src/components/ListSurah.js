@@ -43,7 +43,7 @@ const ListSurah = () => {
 						<ListGroup>
 							{listSurah.data &&
 								listSurah.data.map((doc) => (
-									<ListGroup.Item key={doc.number} onClick={() => surahClick(doc.number)}>
+									<ListGroup.Item key={doc.number} onClick={() => surahClick(doc.number)} className={surah.data && doc.number === surah.data.number && "active"}>
 										{doc.number}. {doc.name.transliteration.id} ({doc.name.translation.id})
 									</ListGroup.Item>
 								))}

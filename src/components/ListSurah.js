@@ -1,74 +1,64 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { Col, ListGroup, Row, Tab } from "react-bootstrap";
+import { Row, Col, Accordion, Card } from "react-bootstrap";
+import axios from "axios";
+import ReactPlayer from "react-player";
 import { API_URL } from "../utils/constants";
 
 const ListSurah = () => {
-	const [listSurah, setListSurah] = useState([]);
-	const [surah, setSurah] = useState([]);
+	const [list, setList] = useState([]);
 
-	const surahClick = (nomor) => {
-		axios
-			.get(API_URL + `surah/${nomor}`)
-			.then(function (response) {
-				// handle success
-				console.log(response.data);
-				setSurah(response.data);
-			})
-			.catch(function (error) {
-				// handle error
-				console.log(error);
-			});
+	const getter = async () => {
+		try {
+			const surahRes = await axios.get(API_URL + "surah");
+			setList(surahRes.data.data);
+		} catch (err) {
+			console.log(err);
+		}
 	};
 
 	useEffect(() => {
-		axios
-			.get(API_URL + "surah")
-			.then(function (response) {
-				// handle success
-				// console.log(response.data);
-				setListSurah(response.data);
-			})
-			.catch(function (error) {
-				// handle error
-				console.log(error);
-			});
+		getter();
 	}, []);
 
 	return (
 		<Col md={12} mt={2}>
-			<Tab.Container id="list-group-tabs-example">
-				<Row>
-					<Col sm={4}>
-						<ListGroup>
-							{listSurah.data &&
-								listSurah.data.map((doc) => (
-									<ListGroup.Item key={doc.number} onClick={() => surahClick(doc.number)} className={surah.data && doc.number === surah.data.number && "active"}>
+			<Accordion>
+				{list &&
+					list.map((doc) => (
+						<Card key={doc.number}>
+							<Accordion.Toggle as={Card.Header} eventKey={doc.number}>
+								<Row>
+									<Col md={8}>
 										{doc.number}. {doc.name.transliteration.id} ({doc.name.translation.id})
-									</ListGroup.Item>
-								))}
-						</ListGroup>
-					</Col>
-					<Col sm={8}>
-						<ListGroup>
-							{surah.data &&
-								surah.data.verses.map((doc) => (
-									<ListGroup.Item key={doc.number.inQuran} className="text-right">
-										<h3>{doc.text.arab}</h3>
-										<small>
-											<i>{doc.text.transliteration.en}</i>
-										</small>
-										<br />
-										<br />
-										<small>
-											{doc.number.inSurah}. {doc.translation.id}
-										</small>
-									</ListGroup.Item>
-								))}
-						</ListGroup>
-					</Col>
-				</Row>
-			</Tab.Container>
+									</Col>
+									<Col md={4} className="text-right">
+										<ReactPlayer width="1%" height="1%" url={`https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${("00" + doc.number).slice(-3)}.mp3`} />
+										<button>Play</button>
+									</Col>
+								</Row>
+							</Accordion.Toggle>
+							<Accordion.Collapse eventKey={doc.number}>
+								<Card.Body>
+									<p>
+										{doc.revelation.id} - {doc.numberOfVerses}
+									</p>
+									<p>{doc.tafsir.id}</p>
+								</Card.Body>
+							</Accordion.Collapse>
+						</Card>
+					))}
+			</Accordion>
+			{/* <Accordion>
+				{list &&
+					list.map((doc) => (
+						<Accordion.Item eventKey={doc.number} key={doc.number}>
+							<Accordion.Header>
+								{doc.number}. {doc.name.transliteration.id} {doc.name.translation.id}
+							</Accordion.Header>
+							<Accordion.Body>{doc.tafsir.id}</Accordion.Body>
+						</Accordion.Item>
+					))}
+			</Accordion> */}
 		</Col>
 	);
 };

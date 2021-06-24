@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container, Row } from "react-bootstrap";
 import { NavbarComp, ListSurah, Home, AyatList } from "./components";
@@ -6,6 +6,12 @@ import * as Icon from "react-bootstrap-icons";
 
 function App() {
 	const [showScroll, setShowScroll] = useState(false);
+	const [isAuthenthicated, setIsAuthenticated] = useState(false);
+	const [usersData, setUsersData] = useState({});
+
+	const scrollTop = () => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
 
 	const checkScrollTop = () => {
 		if (!showScroll && window.pageYOffset > 200) {
@@ -15,15 +21,34 @@ function App() {
 		}
 	};
 
-	const scrollTop = () => {
-		window.scrollTo({ top: 0, behavior: "smooth" });
+	window.addEventListener("scroll", checkScrollTop);
+
+	const handleAuth = (boolean) => {
+		setIsAuthenticated(boolean);
+		boolean === false && setUsersData({});
 	};
 
-	window.addEventListener("scroll", checkScrollTop);
+	const verifyAuth = async () => {
+		try {
+			const token = JSON.parse(localStorage.getItem("state-user"));
+			if (token) {
+				setUsersData(token);
+				setIsAuthenticated(true);
+			} else {
+				setIsAuthenticated(false);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	useEffect(() => {
+		verifyAuth();
+	}, []);
 
 	return (
 		<div>
-			<NavbarComp />
+			<NavbarComp isAuthenthicated={isAuthenthicated} usersData={usersData} handleAuth={handleAuth} />
 			<div className="scrollTopWrapper" onClick={scrollTop} style={{ display: showScroll ? "flex" : "none" }}>
 				<Icon.ArrowUp className="scrollTop" />
 			</div>

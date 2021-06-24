@@ -42,7 +42,7 @@ const AyatList = () => {
 				{ayah.verses &&
 					ayah.verses.map((doc) => (
 						<Col md={12} key={doc.number.inSurah}>
-							<Alert variant="success">
+							<Alert className="alertCustom" variant="success">
 								<Row>
 									<Col className="align-self-center">
 										<Badge pill variant="info" className="px-2 py-1">
@@ -50,12 +50,8 @@ const AyatList = () => {
 										</Badge>
 									</Col>
 									<Col className="align-self-center text-right">
-										<button className="btn btn-sm ml-1 btn-outline-info">
-											<Icon.Play />
-										</button>
-										<button className="btn btn-sm ml-1 btn-outline-info">
-											<Icon.BookmarkPlus />
-										</button>
+										<Icon.Play className="iconCustom ml-3 text-info" />
+										<Icon.Star className="iconCustom ml-3 text-info" />
 									</Col>
 								</Row>
 							</Alert>

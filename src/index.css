@@ -58,3 +58,19 @@ body {
 		opacity: 0.5;
 	}
 }
+
+.iconCustom {
+	font-size: 20px;
+	transition: all ease-in-out 0.3s;
+}
+
+.iconCustom:hover {
+	cursor: pointer;
+	transform: translateY(-5px);
+}
+
+.alertCustom {
+	padding: 10px;
+	border: none;
+	background-color: rgba(167, 220, 228, 0.2);
+}

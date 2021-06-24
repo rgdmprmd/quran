@@ -41,7 +41,7 @@ const AyatList = () => {
 				</Col>
 				{ayah.verses &&
 					ayah.verses.map((doc) => (
-						<Col md={12} key={doc.number.inSurah}>
+						<Col id={`ayah${doc.number.inSurah}`} md={12} key={doc.number.inSurah}>
 							<Alert className="alertCustom" variant="success">
 								<Row>
 									<Col className="align-self-center">

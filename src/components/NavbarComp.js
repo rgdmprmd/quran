@@ -48,7 +48,7 @@ const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
 							</Nav.Link>
 						) : (
 							<NavDropdown title={usersData.displayName} id="basic-nav-dropdown">
-								<NavDropdown.Item href="/surah/1">Last Read</NavDropdown.Item>
+								<NavDropdown.Item href="/surah/2#ayah14">Last Read</NavDropdown.Item>
 								<NavDropdown.Divider />
 								<NavDropdown.Item href="/" onClick={handleSignout}>
 									Signout

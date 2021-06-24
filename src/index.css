@@ -2,6 +2,10 @@ body {
 	font-family: "Public Sans", sans-serif;
 }
 
+.cardheader {
+	background-color: transparent;
+}
+
 .card-background {
 	background: linear-gradient(-45deg, #9345f2, #e73c7e, #23a6d5, #23d5ab);
 	background-size: 400% 400%;
@@ -17,5 +21,40 @@ body {
 	}
 	100% {
 		background-position: 0% 50%;
+	}
+}
+
+.scrollTopWrapper {
+	background-color: #50b9ca;
+	border-radius: 5px;
+	position: fixed;
+	right: 20px;
+	bottom: 20px;
+	width: 40px;
+	height: 40px;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	z-index: 1000;
+	cursor: pointer;
+	animation: fadeIn 0.3s;
+	transition: opacity 0.4s;
+	opacity: 0.5;
+}
+
+.scrollTop {
+	font-size: 24px;
+}
+
+.scrollTopWrapper:hover {
+	opacity: 1;
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 0.5;
 	}
 }

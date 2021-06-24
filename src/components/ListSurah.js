@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Row, Col, Accordion, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { API_URL } from "../utils/constants";
+import * as Icon from "react-bootstrap-icons";
 import axios from "axios";
 
 const ListSurah = () => {
@@ -26,14 +27,21 @@ const ListSurah = () => {
 				{list &&
 					list.map((doc) => (
 						<Card key={doc.number}>
-							<Accordion.Toggle as={Card.Header} eventKey={doc.number}>
+							<Accordion.Toggle as={Card.Header} eventKey={doc.number} className="cardheader">
 								<Row>
-									<Col md={8}>
-										{doc.number}. {doc.name.transliteration.id} ({doc.name.translation.id})
+									<Col xs={2} className="align-self-center">
+										<span class="small">{doc.number}</span>
 									</Col>
-									<Col md={4} className="text-right">
-										<Link className="btn btn-sm btn-primary" to={`/surah/${doc.number}`}>
-											Baca
+									<Col xs={7} className="align-self-center">
+										<span class="font-weight-bold">{doc.name.transliteration.id}</span>
+										<br />
+										<small>
+											{doc.revelation.id.toUpperCase()} - {doc.numberOfVerses} AYAT
+										</small>
+									</Col>
+									<Col className=" align-self-center text-right">
+										<Link className="btn btn-sm btn-outline-info" to={`/surah/${doc.number}`}>
+											<Icon.Book />
 										</Link>
 									</Col>
 								</Row>
@@ -43,7 +51,7 @@ const ListSurah = () => {
 									<p>
 										{doc.revelation.id} - {doc.numberOfVerses} Ayat
 									</p>
-									<p>{doc.tafsir.id}</p>
+									<p className="text-justify">{doc.tafsir.id}</p>
 								</Card.Body>
 							</Accordion.Collapse>
 						</Card>

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Container, Row } from "react-bootstrap";
 import { NavbarComp, ListSurah, Home, AyatList } from "./components";
 import * as Icon from "react-bootstrap-icons";
+import db from "./utils/firebase";
 
 function App() {
 	const [showScroll, setShowScroll] = useState(false);
@@ -32,8 +33,9 @@ function App() {
 		try {
 			const token = JSON.parse(localStorage.getItem("state-user"));
 			if (token) {
-				setUsersData(token);
 				setIsAuthenticated(true);
+				const usersGet = await db.collection("users").doc(token.uid).get();
+				usersGet && setUsersData(usersGet.data());
 			} else {
 				setIsAuthenticated(false);
 			}
@@ -49,6 +51,7 @@ function App() {
 	return (
 		<div>
 			<NavbarComp isAuthenthicated={isAuthenthicated} usersData={usersData} handleAuth={handleAuth} />
+
 			<div className="scrollTopWrapper" onClick={scrollTop} style={{ display: showScroll ? "flex" : "none" }}>
 				<Icon.ArrowUp className="scrollTop" />
 			</div>
@@ -59,8 +62,9 @@ function App() {
 						<Row mt={3}>
 							<Switch>
 								<Route exact path="/" render={(props) => <Home {...props} />} />
-								<Route exact path="/surah" render={(props) => <ListSurah {...props} />} />
+								<Route exact path="/surah" render={(props) => <ListSurah {...props} usersData={usersData} />} />
 								<Route exact path="/surah/:ayat" render={(props) => <AyatList {...props} />} />
+								<Route exact path="/surah/:ayat/:lastread" render={(props) => <AyatList {...props} />} />
 							</Switch>
 						</Row>
 					</Container>

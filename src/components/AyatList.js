@@ -2,26 +2,21 @@ import { useEffect, useState, useRef } from "react";
 import { Row, Col, Card, Alert, Badge } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../utils/constants";
-import ReactAudioPlayer from "react-audio-player";
 
 import axios from "axios";
 import * as Icon from "react-bootstrap-icons";
+import db from "../utils/firebase";
 
-const AyatList = () => {
+const AyatList = ({ usersData }) => {
 	const { ayat, lastread } = useParams();
 	const [ayah, setAyah] = useState("");
-	const [audio, setAudio] = useState("");
-	const [hiding, setHiding] = useState("");
-
 	const [trackProgress, setTrackProgress] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
 
-	const audioRef = useRef(new Audio(audio));
+	const audioRef = useRef(new Audio(""));
 	const intervalRef = useRef();
-	const isReady = useRef(false);
 
 	const { duration } = audioRef.current;
-
 	const currentPercentage = duration ? `${(trackProgress / duration) * 100}%` : "0%";
 
 	const startTimer = () => {
@@ -31,7 +26,7 @@ const AyatList = () => {
 		intervalRef.current = setInterval(() => {
 			if (audioRef.current.ended) {
 				// do something when audio ended
-				// toNextTrack();
+				setIsPlaying(false);
 			} else {
 				// do something when audio play
 				setTrackProgress(audioRef.current.currentTime);
@@ -39,19 +34,13 @@ const AyatList = () => {
 		}, [1000]);
 	};
 
-	const onScrub = (value) => {
-		// Clear any timers already running
-		clearInterval(intervalRef.current);
-		audioRef.current.currentTime = value;
-		setTrackProgress(audioRef.current.currentTime);
+	const handlePlay = (number) => {
+		audioRef.current = new Audio(`https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${number}`);
+		setIsPlaying(true);
 	};
 
-	const onScrubEnd = () => {
-		// If not already playing, start
-		if (!isPlaying) {
-			setIsPlaying(true);
-		}
-		startTimer();
+	const handlePause = () => {
+		setIsPlaying(false);
 	};
 
 	useEffect(() => {
@@ -62,6 +51,22 @@ const AyatList = () => {
 			audioRef.current.pause();
 		}
 	}, [isPlaying]);
+
+	const handleLastread = async (numberAyat, numberSurah) => {
+		if (usersData?.uid) {
+			usersData.lastRead = numberSurah + "/" + numberAyat;
+			await db
+				.collection("users")
+				.doc(usersData.uid)
+				.set({
+					...usersData,
+					lastRead: numberSurah + "/" + numberAyat,
+				})
+				.then((res) => window.location.reload());
+		} else {
+			alert(`Silahkan signin untuk menandai bacaan terakhir`);
+		}
+	};
 
 	const ayatget = async (a, b) => {
 		try {
@@ -75,15 +80,6 @@ const AyatList = () => {
 		} catch (err) {
 			console.log(err);
 		}
-	};
-
-	const handlePlay = (number) => {
-		setAudio(`https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${number}`);
-		setIsPlaying(true);
-	};
-
-	const handlePause = () => {
-		setIsPlaying(false);
 	};
 
 	useEffect(() => {
@@ -102,18 +98,12 @@ const AyatList = () => {
 							<small>
 								{ayah.revelation?.id.toUpperCase()} - {ayah.numberOfVerses} AYAT
 							</small>
-
-							<ReactAudioPlayer src={audio} />
 						</Card.Body>
 					</Card>
 				</Col>
 				{ayah.verses &&
 					ayah.verses.map((doc) => (
-<<<<<<< HEAD
-						<Col id={`ayah${doc.number.inSurah}`} md={12} key={doc.number.inSurah}>
-=======
 						<Col md={12} key={doc.number.inSurah} id={`verse${doc.number.inSurah}`}>
->>>>>>> 414f51ca59725d9381a173063c350a0143406a6c
 							<Alert className="alertCustom" variant="success">
 								<Row>
 									<Col className="align-self-center">
@@ -123,12 +113,16 @@ const AyatList = () => {
 									</Col>
 									<Col className="align-self-center text-right">
 										{isPlaying ? (
-											<Icon.Pause className={`iconCustom ml-3 text-info`} onClick={() => handlePause(doc.number.inQuran)} />
+											<Icon.Pause className={`iconCustom ml-3 text-info`} key={doc.number.inQuran} onClick={() => handlePause(doc.number.inQuran)} />
 										) : (
-											<Icon.Play className={`iconCustom ml-3 text-info`} onClick={() => handlePlay(doc.number.inQuran)} />
+											<Icon.Play className={`iconCustom ml-3 text-info`} key={doc.number.inQuran} onClick={() => handlePlay(doc.number.inQuran)} />
 										)}
-										<Icon.Star className={`iconCustom ml-3 text-info`} />
-										<Icon.Bookmark className="iconCustom ml-3 text-info" />
+
+										{usersData?.lastRead === ayat + "/" + doc.number.inSurah ? (
+											<Icon.BookmarkFill className="iconCustom ml-3 text-info" onClick={() => handleLastread(doc.number.inSurah, ayat)} />
+										) : (
+											<Icon.Bookmark className="iconCustom ml-3 text-info" onClick={() => handleLastread(doc.number.inSurah, ayat)} />
+										)}
 									</Col>
 								</Row>
 							</Alert>

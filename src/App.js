@@ -34,6 +34,7 @@ function App() {
 			const token = JSON.parse(localStorage.getItem("state-user"));
 			if (token) {
 				setIsAuthenticated(true);
+
 				const usersGet = await db.collection("users").doc(token.uid).get();
 				usersGet && setUsersData(usersGet.data());
 			} else {
@@ -63,8 +64,8 @@ function App() {
 							<Switch>
 								<Route exact path="/" render={(props) => <Home {...props} />} />
 								<Route exact path="/surah" render={(props) => <ListSurah {...props} usersData={usersData} />} />
-								<Route exact path="/surah/:ayat" render={(props) => <AyatList {...props} />} />
-								<Route exact path="/surah/:ayat/:lastread" render={(props) => <AyatList {...props} />} />
+								<Route exact path="/surah/:ayat" render={(props) => <AyatList {...props} usersData={usersData} />} />
+								<Route exact path="/surah/:ayat/:lastread" render={(props) => <AyatList {...props} usersData={usersData} />} />
 							</Switch>
 						</Row>
 					</Container>

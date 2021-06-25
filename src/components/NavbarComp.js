@@ -13,11 +13,26 @@ const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
 					email: res.user.email,
 					photoURL: res.user.photoURL,
 					isActive: true,
+					lastRead: "1/1",
 				};
 
-				db.collection("users").doc(res.user.uid).set(usr);
-				localStorage.setItem("state-user", JSON.stringify(usr));
-				window.location.reload();
+				db.collection("users")
+					.doc(res.user.uid)
+					.get()
+					.then((res) => {
+						if (res.exists) {
+							localStorage.setItem("state-user", JSON.stringify(res.data()));
+							window.location.reload();
+						} else {
+							db.collection("users")
+								.doc(usr.uid)
+								.set(usr)
+								.then((res) => {
+									localStorage.setItem("state-user", JSON.stringify(usr));
+									window.location.reload();
+								});
+						}
+					});
 			})
 			.catch((err) => alert(err.message));
 	};
@@ -45,12 +60,8 @@ const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
 								Signin with Google
 							</Nav.Link>
 						) : (
-							<NavDropdown title={usersData.displayName} id="basic-nav-dropdown">
-<<<<<<< HEAD
-								<NavDropdown.Item href="/surah/2#ayah14">Last Read</NavDropdown.Item>
-=======
-								<NavDropdown.Item href={`surah/${usersData.lastRead}`}>Last Read</NavDropdown.Item>
->>>>>>> 414f51ca59725d9381a173063c350a0143406a6c
+							<NavDropdown title={usersData?.displayName} id="basic-nav-dropdown">
+								{/* <NavDropdown.Item href={`surah/${usersData?.lastRead}`}>Last Read</NavDropdown.Item> */}
 								<NavDropdown.Divider />
 								<NavDropdown.Item href="/" onClick={handleSignout}>
 									Signout

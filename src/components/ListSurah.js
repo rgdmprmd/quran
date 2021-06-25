@@ -11,20 +11,33 @@ const ListSurah = ({ usersData }) => {
 
 	const getter = async (users) => {
 		try {
+			if (users) {
+				const lastReader = await axios.get(API_URL + "surah/" + users.lastRead);
+				lastReader && setLastSurah(lastReader);
+			} else {
+				setLastSurah([]);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const getListSurah = async () => {
+		try {
 			const surahRes = await axios.get(API_URL + "surah");
 			setList(surahRes.data.data);
-
-			const lastReader = await axios.get(API_URL + "surah/" + users.lastRead);
-			lastReader && setLastSurah(lastReader);
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
 	useEffect(() => {
-		usersData.lastRead && getter(usersData);
+		usersData?.lastRead && getter(usersData);
 	}, [usersData]);
 
+	useEffect(() => {
+		getListSurah();
+	}, []);
 	return (
 		<Col md={12} mt={2}>
 			<Row>
@@ -34,7 +47,7 @@ const ListSurah = ({ usersData }) => {
 							<p>
 								<Icon.BookFill className="mr-2" /> Last Read
 							</p>
-							{lastSurah.data && (
+							{lastSurah.data ? (
 								<>
 									<span>
 										<strong>{lastSurah.data.data.surah.name.transliteration.id} </strong>({lastSurah.data.data.surah.name.translation.id})
@@ -47,6 +60,10 @@ const ListSurah = ({ usersData }) => {
 									<Link to={`surah/${usersData.lastRead}`} className="mt-3 btn btn-outline-light px-5">
 										Read now
 									</Link>
+								</>
+							) : (
+								<>
+									<span>Silahkan signin supaya bisa menandai bacaan terakhir.</span>
 								</>
 							)}
 						</Card.Body>

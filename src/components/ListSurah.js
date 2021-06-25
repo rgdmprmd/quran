@@ -30,10 +30,10 @@ const ListSurah = () => {
 							<Accordion.Toggle as={Card.Header} eventKey={doc.number} className="cardheader">
 								<Row>
 									<Col xs={2} className="align-self-center">
-										<span class="small">{doc.number}</span>
+										<span className="small">{doc.number}</span>
 									</Col>
 									<Col xs={7} className="align-self-center">
-										<span class="font-weight-bold">{doc.name.transliteration.id}</span>
+										<span className="font-weight-bold">{doc.name.transliteration.id}</span>
 										<br />
 										<small>
 											{doc.revelation.id.toUpperCase()} - {doc.numberOfVerses} AYAT

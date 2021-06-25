@@ -6,21 +6,26 @@ import axios from "axios";
 import * as Icon from "react-bootstrap-icons";
 
 const AyatList = () => {
-	const { ayat } = useParams();
+	const { ayat, lastread } = useParams();
 	const [ayah, setAyah] = useState("");
 
-	const ayatget = async (a) => {
+	const ayatget = async (a, b) => {
 		try {
 			const surahRes = await axios.get(API_URL + "surah/" + a);
 			setAyah(surahRes.data.data);
+
+			if(b) {
+				let verse = document.getElementById(`verse${b}`);
+				verse && verse.scrollIntoView({ behavior: "smooth" });
+			}
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
 	useEffect(() => {
-		ayatget(ayat);
-	}, [ayat]);
+		ayatget(ayat, lastread);
+	}, [ayat, lastread]);
 
 	console.log(ayah);
 
@@ -41,7 +46,7 @@ const AyatList = () => {
 				</Col>
 				{ayah.verses &&
 					ayah.verses.map((doc) => (
-						<Col md={12} key={doc.number.inSurah}>
+						<Col md={12} key={doc.number.inSurah} id={`verse${doc.number.inSurah}`}>
 							<Alert className="alertCustom" variant="success">
 								<Row>
 									<Col className="align-self-center">

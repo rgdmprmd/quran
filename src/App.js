@@ -61,6 +61,7 @@ function App() {
 								<Route exact path="/" render={(props) => <Home {...props} />} />
 								<Route exact path="/surah" render={(props) => <ListSurah {...props} />} />
 								<Route exact path="/surah/:ayat" render={(props) => <AyatList {...props} />} />
+								<Route exact path="/surah/:ayat/:lastread" render={(props) => <AyatList {...props} />} />
 							</Switch>
 						</Row>
 					</Container>

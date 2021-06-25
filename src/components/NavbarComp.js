@@ -29,8 +29,6 @@ const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
 		handleAuth(false);
 	};
 
-	console.log(isAuthenthicated);
-
 	return (
 		<Navbar bg="" expand="lg">
 			<Container>
@@ -48,7 +46,7 @@ const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
 							</Nav.Link>
 						) : (
 							<NavDropdown title={usersData.displayName} id="basic-nav-dropdown">
-								<NavDropdown.Item href="/surah/2/18">Last Read</NavDropdown.Item>
+								<NavDropdown.Item href={`surah/${usersData.lastRead}`}>Last Read</NavDropdown.Item>
 								<NavDropdown.Divider />
 								<NavDropdown.Item href="/" onClick={handleSignout}>
 									Signout

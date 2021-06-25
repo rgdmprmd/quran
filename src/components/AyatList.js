@@ -2,19 +2,22 @@ import { useEffect, useState } from "react";
 import { Row, Col, Card, Alert, Badge } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../utils/constants";
+import ReactAudioPlayer from "react-audio-player";
+
 import axios from "axios";
 import * as Icon from "react-bootstrap-icons";
 
 const AyatList = () => {
 	const { ayat, lastread } = useParams();
 	const [ayah, setAyah] = useState("");
+	const [audio, setAudio] = useState("");
 
 	const ayatget = async (a, b) => {
 		try {
 			const surahRes = await axios.get(API_URL + "surah/" + a);
-			setAyah(surahRes.data.data);
+			surahRes && setAyah(surahRes.data.data);
 
-			if(b) {
+			if (b) {
 				let verse = document.getElementById(`verse${b}`);
 				verse && verse.scrollIntoView({ behavior: "smooth" });
 			}
@@ -23,11 +26,13 @@ const AyatList = () => {
 		}
 	};
 
+	const handlePlay = (number) => {
+		setAudio(`https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${("00" + number).slice(-3)}.mp3`);
+	};
+
 	useEffect(() => {
 		ayatget(ayat, lastread);
 	}, [ayat, lastread]);
-
-	console.log(ayah);
 
 	return (
 		<Col md={12} mt={2}>
@@ -35,12 +40,14 @@ const AyatList = () => {
 				<Col md={12}>
 					<Card className="card-background mb-3">
 						<Card.Body className="text-center text-white">
-							<h3>{ayah.name?.transliteration?.id}</h3>
+							<h3 className="font-weight-bold">{ayah.name?.transliteration?.id.toUpperCase()}</h3>
 							<p>{ayah.name?.translation?.id}</p>
 							<hr />
 							<small>
 								{ayah.revelation?.id.toUpperCase()} - {ayah.numberOfVerses} AYAT
 							</small>
+
+							<ReactAudioPlayer src={audio} autoPlay />
 						</Card.Body>
 					</Card>
 				</Col>
@@ -55,8 +62,9 @@ const AyatList = () => {
 										</Badge>
 									</Col>
 									<Col className="align-self-center text-right">
-										<Icon.Play className="iconCustom ml-3 text-info" />
+										<Icon.Play className="iconCustom ml-3 text-info" onClick={() => handlePlay(doc.number.inSurah)} />
 										<Icon.Star className="iconCustom ml-3 text-info" />
+										<Icon.Bookmark className="iconCustom ml-3 text-info" />
 									</Col>
 								</Row>
 							</Alert>

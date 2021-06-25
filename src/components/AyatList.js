@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Row, Col, Card, Alert, Badge } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../utils/constants";
@@ -11,6 +11,57 @@ const AyatList = () => {
 	const { ayat, lastread } = useParams();
 	const [ayah, setAyah] = useState("");
 	const [audio, setAudio] = useState("");
+	const [hiding, setHiding] = useState("");
+
+	const [trackProgress, setTrackProgress] = useState(0);
+	const [isPlaying, setIsPlaying] = useState(false);
+
+	const audioRef = useRef(new Audio(audio));
+	const intervalRef = useRef();
+	const isReady = useRef(false);
+
+	const { duration } = audioRef.current;
+
+	const currentPercentage = duration ? `${(trackProgress / duration) * 100}%` : "0%";
+
+	const startTimer = () => {
+		// Clear any timers already running
+		clearInterval(intervalRef.current);
+
+		intervalRef.current = setInterval(() => {
+			if (audioRef.current.ended) {
+				// do something when audio ended
+				// toNextTrack();
+			} else {
+				// do something when audio play
+				setTrackProgress(audioRef.current.currentTime);
+			}
+		}, [1000]);
+	};
+
+	const onScrub = (value) => {
+		// Clear any timers already running
+		clearInterval(intervalRef.current);
+		audioRef.current.currentTime = value;
+		setTrackProgress(audioRef.current.currentTime);
+	};
+
+	const onScrubEnd = () => {
+		// If not already playing, start
+		if (!isPlaying) {
+			setIsPlaying(true);
+		}
+		startTimer();
+	};
+
+	useEffect(() => {
+		if (isPlaying) {
+			audioRef.current.play();
+			startTimer();
+		} else {
+			audioRef.current.pause();
+		}
+	}, [isPlaying]);
 
 	const ayatget = async (a, b) => {
 		try {
@@ -27,7 +78,12 @@ const AyatList = () => {
 	};
 
 	const handlePlay = (number) => {
-		setAudio(`https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${("00" + number).slice(-3)}.mp3`);
+		setAudio(`https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${number}`);
+		setIsPlaying(true);
+	};
+
+	const handlePause = () => {
+		setIsPlaying(false);
 	};
 
 	useEffect(() => {
@@ -47,7 +103,7 @@ const AyatList = () => {
 								{ayah.revelation?.id.toUpperCase()} - {ayah.numberOfVerses} AYAT
 							</small>
 
-							<ReactAudioPlayer src={audio} autoPlay />
+							<ReactAudioPlayer src={audio} />
 						</Card.Body>
 					</Card>
 				</Col>
@@ -62,8 +118,12 @@ const AyatList = () => {
 										</Badge>
 									</Col>
 									<Col className="align-self-center text-right">
-										<Icon.Play className="iconCustom ml-3 text-info" onClick={() => handlePlay(doc.number.inSurah)} />
-										<Icon.Star className="iconCustom ml-3 text-info" />
+										{isPlaying ? (
+											<Icon.Pause className={`iconCustom ml-3 text-info`} onClick={() => handlePause(doc.number.inQuran)} />
+										) : (
+											<Icon.Play className={`iconCustom ml-3 text-info`} onClick={() => handlePlay(doc.number.inQuran)} />
+										)}
+										<Icon.Star className={`iconCustom ml-3 text-info`} />
 										<Icon.Bookmark className="iconCustom ml-3 text-info" />
 									</Col>
 								</Row>

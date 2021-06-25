@@ -2,6 +2,10 @@ body {
 	font-family: "Public Sans", sans-serif;
 }
 
+.hiding {
+	display: none;
+}
+
 .cardheader {
 	background-color: transparent;
 }

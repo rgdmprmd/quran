@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Row, Col, Card, Alert, Badge } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../utils/constants";
+import { Link } from "react-router-dom";
 
 import axios from "axios";
 import * as Icon from "react-bootstrap-icons";
@@ -12,6 +13,7 @@ const AyatList = ({ usersData }) => {
 	const [ayah, setAyah] = useState("");
 	const [trackProgress, setTrackProgress] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
+	const [ayatPlaying, setAyatPlaying] = useState(0);
 
 	const audioRef = useRef(new Audio(""));
 	const intervalRef = useRef();
@@ -34,9 +36,15 @@ const AyatList = ({ usersData }) => {
 		}, [1000]);
 	};
 
-	const handlePlay = (number) => {
-		audioRef.current = new Audio(`https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${number}`);
-		setIsPlaying(true);
+	const handlePlay = (number, type) => {
+		if (type === "ayat") {
+			audioRef.current = new Audio(`https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${number}`);
+			setIsPlaying(true);
+			setAyatPlaying(number);
+		} else {
+			audioRef.current = new Audio(`https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${("00" + number).slice(-3)}.mp3`);
+			setIsPlaying(true);
+		}
 	};
 
 	const handlePause = () => {
@@ -98,6 +106,19 @@ const AyatList = ({ usersData }) => {
 							<small>
 								{ayah.revelation?.id.toUpperCase()} - {ayah.numberOfVerses} AYAT
 							</small>
+							<div className="text-center mt-2">
+								{ayat > 1 && (
+									<Link to={"./" + (parseInt(ayat) - 1)} className="btn btn-sm btn-outline-light">
+										<Icon.ArrowLeft />
+									</Link>
+								)}
+								{isPlaying ? <Icon.Pause className="iconCustom ml-3" onClick={() => handlePause()} /> : <Icon.CaretRight className="iconCustom ml-3" onClick={() => handlePlay(ayat, "surah")} />}
+								{ayat < 114 && (
+									<Link to={"./" + (parseInt(ayat) + 1)} className="btn btn-sm btn-outline-light ml-3">
+										<Icon.ArrowRight className="" />
+									</Link>
+								)}
+							</div>
 						</Card.Body>
 					</Card>
 				</Col>
@@ -112,10 +133,10 @@ const AyatList = ({ usersData }) => {
 										</Badge>
 									</Col>
 									<Col className="align-self-center text-right">
-										{isPlaying ? (
-											<Icon.Pause className={`iconCustom ml-3 text-info`} key={doc.number.inQuran} onClick={() => handlePause(doc.number.inQuran)} />
+										{isPlaying && ayatPlaying === doc.number.inQuran ? (
+											<Icon.Pause className={`iconCustom ml-3 text-info`} key={doc.number.inQuran} onClick={() => handlePause(doc.number.inQuran, "ayat")} />
 										) : (
-											<Icon.Play className={`iconCustom ml-3 text-info`} key={doc.number.inQuran} onClick={() => handlePlay(doc.number.inQuran)} />
+											<Icon.CaretRight className={`iconCustom ml-3 text-info`} key={doc.number.inQuran} onClick={() => handlePlay(doc.number.inQuran, "ayat")} />
 										)}
 
 										{usersData?.lastRead === ayat + "/" + doc.number.inSurah ? (

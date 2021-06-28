@@ -12,7 +12,7 @@ const Home = () => {
 								<h2>
 									<strong>Learn and Recite Quran </strong> <br /> Once Everyday.
 								</h2>
-								<p>Gain your weight, with satisfaction.</p>
+								<p>Read and learn Quran from your gadget.</p>
 								<Link className="btn btn-info" to="/surah">
 									Get Started
 								</Link>

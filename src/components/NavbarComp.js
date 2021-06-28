@@ -42,6 +42,7 @@ const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
 
 		localStorage.removeItem("state-user");
 		handleAuth(false);
+		window.location.reload();
 	};
 
 	return (

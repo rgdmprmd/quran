@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Row, Col, Accordion, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { API_URL } from "../utils/constants";
+// import { getAllSurah, setAllSurahToCache } from "../utils/cacheQuran";
 import * as Icon from "react-bootstrap-icons";
 import axios from "axios";
 

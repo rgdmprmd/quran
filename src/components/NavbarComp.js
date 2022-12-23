@@ -1,4 +1,6 @@
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
+
 import db, { auth, provider } from "../utils/firebase";
 
 const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
@@ -54,8 +56,12 @@ const NavbarComp = ({ isAuthenthicated, handleAuth, usersData }) => {
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar-nav">
 					<Nav className="me-auto">
-						<Nav.Link href="/">Home</Nav.Link>
-						<Nav.Link href="/surah">Surah</Nav.Link>
+						<Nav.Link as={Link} to="/">
+							Home
+						</Nav.Link>
+						<Nav.Link as={Link} to="/surah">
+							Surah
+						</Nav.Link>
 						{!isAuthenthicated ? (
 							<Nav.Link href="/" onClick={handleSignin}>
 								Signin with Google

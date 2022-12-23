@@ -51,14 +51,14 @@ function App() {
 
 	return (
 		<div>
-			<NavbarComp isAuthenthicated={isAuthenthicated} usersData={usersData} handleAuth={handleAuth} />
-
 			<div className="scrollTopWrapper" onClick={scrollTop} style={{ display: showScroll ? "flex" : "none" }}>
 				<Icon.ArrowUp className="scrollTop" />
 			</div>
 
 			<div className="mt-5">
 				<Router>
+					<NavbarComp isAuthenthicated={isAuthenthicated} usersData={usersData} handleAuth={handleAuth} />
+
 					<Container>
 						<Row mt={3}>
 							<Switch>

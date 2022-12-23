@@ -34,7 +34,7 @@ const AyatList = ({ usersData }) => {
 			setAyatPlaying(number);
 
 			let verse = document.getElementById(`verse${number}`);
-			verse && verse.scrollIntoView({ behavior: "smooth" });
+			verse && verse.scrollIntoView({ block: "start", behavior: "smooth" });
 		} else {
 			audioRef.current = new Audio(`https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${("00" + number).slice(-3)}.mp3`);
 			setIsPlaying(true);
@@ -135,10 +135,10 @@ const AyatList = ({ usersData }) => {
 				</Col>
 				{ayah.verses &&
 					ayah.verses.map((doc) => (
-						<Col md={12} key={doc.number.inQuran} id={`verse${doc.number.inQuran}`}>
+						<Col md={12} key={doc.number.inQuran} className="verses" id={`verse${doc.number.inQuran}`}>
 							<Alert className="alertCustom" variant="success">
 								<Row>
-									<Col className="align-self-center md-1">
+									<Col md={1} className="align-self-center md-1">
 										<Badge pill variant="info" className="px-2 py-1">
 											{doc.number.inSurah}
 										</Badge>

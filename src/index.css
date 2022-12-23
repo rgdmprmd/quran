@@ -77,3 +77,7 @@ body {
 	border: none;
 	background-color: rgba(167, 220, 228, 0.2);
 }
+
+.verses {
+	scroll-margin: 100px;
+}

@@ -6,9 +6,9 @@ import * as Icon from "react-bootstrap-icons";
 import db from "./utils/firebase";
 
 function App() {
-	const [showScroll, setShowScroll] = useState(false);
-	const [isAuthenthicated, setIsAuthenticated] = useState(false);
-	const [usersData, setUsersData] = useState({});
+	const [showScroll, setShowScroll] = useState(false); // Back to top toggle
+	const [isAuthenthicated, setIsAuthenticated] = useState(false); // Authentication user
+	const [usersData, setUsersData] = useState({}); // User information
 
 	const scrollTop = () => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -31,14 +31,14 @@ function App() {
 
 	const verifyAuth = async () => {
 		try {
-			const token = JSON.parse(localStorage.getItem("state-user"));
+			const token = JSON.parse(localStorage.getItem("state-user")); // Get user in localstorage
 			if (token) {
-				setIsAuthenticated(true);
+				setIsAuthenticated(true); // If found user, set as authenticated
 
 				const usersGet = await db.collection("users").doc(token.uid).get();
-				usersGet && setUsersData(usersGet.data());
+				usersGet && setUsersData(usersGet.data()); // Fill in the user information
 			} else {
-				setIsAuthenticated(false);
+				setIsAuthenticated(false); // If empty, set as un-authenticate
 			}
 		} catch (err) {
 			console.log(err);

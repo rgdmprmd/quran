@@ -6,9 +6,13 @@ import { API_URL } from "../utils/constants";
 import * as Icon from "react-bootstrap-icons";
 import axios from "axios";
 
+import SearchBox from "./SearchBox";
+
 const ListSurah = ({ usersData }) => {
 	const [list, setList] = useState([]);
 	const [lastSurah, setLastSurah] = useState([]);
+	const [searchField, setSearchField] = useState("");
+	const [filteredSurahs, setFilteredSurahs] = useState(list);
 
 	const getter = async (users) => {
 		try {
@@ -39,6 +43,18 @@ const ListSurah = ({ usersData }) => {
 	useEffect(() => {
 		getListSurah();
 	}, []);
+
+	const searchHandler = (e) => {
+		const searchString = e.target.value.toLocaleLowerCase();
+		setSearchField(searchString);
+	};
+
+	useEffect(() => {
+		const newFilteredSurah = list.filter((surahEach) => surahEach.name.transliteration.id.toLowerCase().includes(searchField.toLowerCase()));
+
+		setFilteredSurahs(newFilteredSurah);
+	}, [list, searchField]);
+
 	return (
 		<Col md={12} mt={2}>
 			<Row>
@@ -71,9 +87,12 @@ const ListSurah = ({ usersData }) => {
 					</Card>
 				</Col>
 				<Col md={12}>
+					<SearchBox onChangeHandler={searchHandler} className="form-control mb-3" placeholder="Search any Surah" />
+				</Col>
+				<Col md={12}>
 					<Accordion>
-						{list &&
-							list.map((doc) => (
+						{filteredSurahs &&
+							filteredSurahs.map((doc) => (
 								<Card key={doc.number}>
 									<Accordion.Toggle as={Card.Header} eventKey={doc.number} className="cardheader">
 										<Row>

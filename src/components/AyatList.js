@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Row, Col, Card, Alert, Badge } from "react-bootstrap";
+import { Row, Col, Card, Alert, Badge, ProgressBar } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../utils/constants";
 import { Link } from "react-router-dom";
@@ -18,47 +18,58 @@ const AyatList = ({ usersData }) => {
 	const audioRef = useRef(new Audio(""));
 	const intervalRef = useRef();
 
-	const { duration } = audioRef.current;
-	const currentPercentage = duration ? `${(trackProgress / duration) * 100}%` : "0%";
-
-	const startTimer = () => {
-		// Clear any timers already running
-		clearInterval(intervalRef.current);
-
-		intervalRef.current = setInterval(() => {
-			if (audioRef.current.ended) {
-				// do something when audio ended
-				setIsPlaying(false);
-			} else {
-				// do something when audio play
-				setTrackProgress(audioRef.current.currentTime);
-			}
-		}, [1000]);
+	// const { duration } = audioRef.current;
+	// const currentPercentage = duration ? `${(trackProgress / duration) * 100}%` : "0%";
+	const handlePause = () => {
+		setIsPlaying(false);
 	};
 
 	const handlePlay = (number, type) => {
+		setIsPlaying(false);
+		audioRef.current.pause();
+
 		if (type === "ayat") {
 			audioRef.current = new Audio(`https://cdn.alquran.cloud/media/audio/ayah/ar.alafasy/${number}`);
 			setIsPlaying(true);
 			setAyatPlaying(number);
+
+			let verse = document.getElementById(`verse${number}`);
+			verse && verse.scrollIntoView({ behavior: "smooth" });
 		} else {
 			audioRef.current = new Audio(`https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${("00" + number).slice(-3)}.mp3`);
 			setIsPlaying(true);
 		}
 	};
 
-	const handlePause = () => {
-		setIsPlaying(false);
-	};
-
 	useEffect(() => {
 		if (isPlaying) {
 			audioRef.current.play();
-			startTimer();
+
+			// Clear any timers already running
+			clearInterval(intervalRef.current);
+
+			intervalRef.current = setInterval(() => {
+				if (audioRef.current.ended) {
+					// do something when audio ended
+					let nextAyat = parseInt(ayatPlaying + 1);
+					let totalAyat = parseInt(ayah.numberOfVerses - 1);
+					let lastAyat = parseInt(ayah.verses[totalAyat].number.inQuran);
+
+					setIsPlaying(false);
+					if (nextAyat > lastAyat) {
+						setIsPlaying(false);
+					} else {
+						handlePlay(nextAyat, "ayat");
+					}
+				} else {
+					// do something when audio play
+					setTrackProgress((audioRef.current.currentTime / audioRef.current.duration) * 100);
+				}
+			}, [200]);
 		} else {
 			audioRef.current.pause();
 		}
-	}, [isPlaying]);
+	}, [ayah.numberOfVerses, ayah.verses, ayatPlaying, isPlaying]);
 
 	const handleLastread = async (numberAyat, numberSurah) => {
 		if (usersData?.uid) {
@@ -112,7 +123,7 @@ const AyatList = ({ usersData }) => {
 										<Icon.ArrowLeft />
 									</Link>
 								)}
-								{isPlaying ? <Icon.Pause className="iconCustom ml-3" onClick={() => handlePause()} /> : <Icon.CaretRight className="iconCustom ml-3" onClick={() => handlePlay(ayat, "surah")} />}
+								{isPlaying ? <Icon.Pause className="iconCustom ml-3" onClick={() => handlePause()} /> : <Icon.CaretRight className="iconCustom ml-3" onClick={() => handlePlay(ayah.verses[0].number.inQuran, "ayat")} />}
 								{ayat < 114 && (
 									<Link to={"./" + (parseInt(ayat) + 1)} className="btn btn-sm btn-outline-light ml-3">
 										<Icon.ArrowRight className="" />
@@ -124,14 +135,15 @@ const AyatList = ({ usersData }) => {
 				</Col>
 				{ayah.verses &&
 					ayah.verses.map((doc) => (
-						<Col md={12} key={doc.number.inSurah} id={`verse${doc.number.inSurah}`}>
+						<Col md={12} key={doc.number.inQuran} id={`verse${doc.number.inQuran}`}>
 							<Alert className="alertCustom" variant="success">
 								<Row>
-									<Col className="align-self-center">
+									<Col className="align-self-center md-1">
 										<Badge pill variant="info" className="px-2 py-1">
 											{doc.number.inSurah}
 										</Badge>
 									</Col>
+									<Col className="align-self-center">{isPlaying && ayatPlaying === doc.number.inQuran ? <ProgressBar variant="info" now={trackProgress} /> : ""}</Col>
 									<Col className="align-self-center text-right">
 										{isPlaying && ayatPlaying === doc.number.inQuran ? (
 											<Icon.Pause className={`iconCustom ml-3 text-info`} key={doc.number.inQuran} onClick={() => handlePause(doc.number.inQuran, "ayat")} />
